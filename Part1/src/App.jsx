@@ -1,63 +1,49 @@
 import { useState } from 'react'
 
-const Button = ({onClick, text}) => <button onClick={onClick}>{text}</button>
-
-const Stats = ({text, value}) => {
-  if(text === "positive"){
-    return <p>{text}: {value}%</p>
-  } else {
-    return <p>{text}: {value}</p>
-  }
-}
-
 const App = () => {
-  // save clicks of each button to its own state
-  const [good, setGood] = useState(0)
-  const [neutral, setNeutral] = useState(0)
-  const [bad, setBad] = useState(0)
-  const [totalClick, setTotalClick] = useState(0)
-  const [totalPoint, setTotalPoint] = useState(0)
-
-  const goodReview = () => {
-    setGood(good + 1)
-    setTotalClick(totalClick + 1)
-    setTotalPoint(totalPoint + 1)
+  const anecdotes = [
+    'If it hurts, do it more often.',
+    'Adding manpower to a late software project makes it later!',
+    'The first 90 percent of the code accounts for the first 90 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.',
+    'Any fool can write code that a computer can understand. Good programmers write code that humans can understand.',
+    'Premature optimization is the root of all evil.',
+    'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.',
+    'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.',
+    'The only way to go fast, is to go well.'
+  ]
+  
+  const[votes, setVotes] = useState(new Array(8).fill(0))
+  const [selected, setSelected] = useState(0)
+  const largestElement = (votes) => {
+      let maxIndex = 0;
+      for (let i = 1; i<votes.length; i++){
+        if (votes[i] > votes[maxIndex]){
+          maxIndex = i;
+        }
+      }
+      return maxIndex;
   }
-
-  const neutralReview = () => {
-    setNeutral(neutral + 1)
-    setTotalClick(totalClick + 1)
+  const randomize = () =>{
+    setSelected(Math.floor(Math.random() * 7))
+    console.log(votes)
+    console.log(selected)
   }
-  const badReview = () => {
-    setBad(bad + 1)
-    setTotalClick(totalClick + 1)
-    setTotalPoint(totalPoint - 1)
+  const voting = (num) =>{
+    const copy = [...votes]
+    copy[num] += 1
+    setVotes(copy)
   }
-
-  const average = totalClick === 0 ? 0 : totalPoint / totalClick
-  const positive = totalClick === 0 ? 0 : (good / totalClick) * 100
-
   return (
     <div>
-      <h1>give feedback</h1>
-      <Button onClick={goodReview} text='good'/>
-      <Button onClick={neutralReview} text='neutral'/>
-      <Button onClick={badReview} text='bad'/>
-
-      <h1>Statistics</h1>
-
-      {totalClick === 0? (
-        <p>No feedback given</p>
-      ): (
-        <>
-          <Stats text='good' value={good}/>
-          <Stats text='neutral' value={neutral}/>
-          <Stats text='bad' value={bad}/>
-          <Stats text='all' value={totalClick}/>
-          <Stats text='average' value={average}/>
-          <Stats text='positive' value={positive}/>
-        </>
-      )}
+      <h1>Anecdote of the day</h1>
+      {anecdotes[selected]}
+      <p>has {votes[selected]}</p>
+      <p>
+        <button onClick={randomize}>random anecdotes</button>
+        <button onClick={() => voting(selected)}>vote</button>
+      </p>
+      <h1>Anecdote with most votes</h1>
+      {anecdotes[largestElement(votes)]}
     </div>
   )
 }
