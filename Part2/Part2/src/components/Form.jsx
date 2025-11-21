@@ -1,3 +1,4 @@
+import personService from '../services/persons'
 const Form = ({
     newName,
     setNewName,
@@ -13,15 +14,33 @@ const Form = ({
 
     const addName = (event) =>{
         event.preventDefault()
-        const nameExist = persons.some(person => person.name === newName)
-        if (nameExist){
-            alert(newName + ' is already added to phonebook')
+        const existingPerson = persons.find(person => person.name === newName)
+        if (existingPerson){
+            const id = existingPerson.id
+            if(!window.confirm(newName + ' is already added to phonebook, replace the old number with a new one?')){
+                return
+            }
+            const changedPerson = { ...existingPerson, number: newNumber}
+            personService
+                .update(id, changedPerson)
+                .then(returnedPerson => {
+                    setPersons(persons.map(p => p.id !== existingPerson.id ? p : returnedPerson))
+                    setNewName('')
+                    setNewNumber('')
+                })
+                .catch(error =>{
+                    alert(`Information of ${existingPerson.name} has already been removed from server`)
+                })
             return
         }
         const nameObject = {name: newName, number: newNumber}
-        setPersons(persons.concat(nameObject))
-        setNewName('')
-        setNewNumber('')
+        personService
+            .create(nameObject)
+            .then(returnedPersons =>{
+                setPersons(persons.concat(returnedPersons))
+                setNewName('')
+                setNewNumber('')
+            })
     }
     return(
         <form onSubmit={addName}>

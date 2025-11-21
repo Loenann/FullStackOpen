@@ -2,7 +2,7 @@ import { useState, useEffect} from 'react'
 import Person from './components/Person'
 import Search from './components/Search'
 import Form from './components/Form'
-import axios from 'axios'
+import personService from './services/persons'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -12,13 +12,24 @@ const App = () => {
 
   const hook = () => {
     console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('promise fulfilled')
-        setPersons(response.data)
-        console.log(response.data)
+    personService
+      .getAll()
+      .then(initialPersons =>{
+        setPersons(initialPersons)
       })
+  }
+  const deletePerson = (person) =>{
+    if (!window.confirm(`Delete ${person.name}?`)){
+      return
+    }
+    console.log(person.id)
+    personService
+        .remove(person.id)
+        .then(returnedPersons => {
+            console.log(returnedPersons)
+            setPersons(persons.filter(p => p.id !== person.id))
+        })
+
   }
 
 
@@ -31,7 +42,7 @@ const App = () => {
       <Form newName={newName} setNewName={setNewName} newNumber={newNumber} setNewNumber={setNewNumber} persons={persons} setPersons={setPersons}/>
       <h2>Numbers</h2>
       {persons.map(person => (
-        <Person key={person.name} person={person} search={search}/>
+        <Person key={person.id} person={person} search={search} handleDelete={deletePerson}/>
       ))}
       ...
     </div>
