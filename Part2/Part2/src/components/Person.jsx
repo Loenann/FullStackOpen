@@ -10,7 +10,7 @@ const Person = ({person, search, handleDelete}) =>{
 
     const match = person.name.toLowerCase().includes(search.toLowerCase())
     if(match){
-        return <p>{person.name} {person.number} {person.id}</p>
+        return <p className='person'>{person.name} {person.number} {person.id}</p>
     }
 
     return null

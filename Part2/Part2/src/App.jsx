@@ -3,12 +3,15 @@ import Person from './components/Person'
 import Search from './components/Search'
 import Form from './components/Form'
 import personService from './services/persons'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber,setNewNumber] = useState('')
   const [search, setSearch] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null)
+  const [successMessage, setSuccessMessage] = useState(null)
 
   const hook = () => {
     console.log('effect')
@@ -37,9 +40,11 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={errorMessage} type="error"/>
+      <Notification message={successMessage} type="success"/>
       <Search search={search} setSearch={setSearch}/>
       <h2>add a new</h2>
-      <Form newName={newName} setNewName={setNewName} newNumber={newNumber} setNewNumber={setNewNumber} persons={persons} setPersons={setPersons}/>
+      <Form newName={newName} setNewName={setNewName} newNumber={newNumber} setNewNumber={setNewNumber} persons={persons} setPersons={setPersons} errorMessage={errorMessage} setErrorMessage={setErrorMessage} setSuccessMessage={setSuccessMessage} successMessage={successMessage}/>
       <h2>Numbers</h2>
       {persons.map(person => (
         <Person key={person.id} person={person} search={search} handleDelete={deletePerson}/>

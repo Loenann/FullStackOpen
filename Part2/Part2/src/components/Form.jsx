@@ -5,7 +5,11 @@ const Form = ({
     newNumber,
     setNewNumber,
     persons,
-    setPersons
+    setPersons,
+    errorMessage,
+    setErrorMessage,
+    setSuccessMessage,
+    successMessage
 }) =>{
     const handleNameAdd = (event) =>{
         console.log(event.target.value)
@@ -24,12 +28,23 @@ const Form = ({
             personService
                 .update(id, changedPerson)
                 .then(returnedPerson => {
-                    setPersons(persons.map(p => p.id !== existingPerson.id ? p : returnedPerson))
+                    setPersons(persons.map(p => p.id !== id ? p : returnedPerson))
+                    setSuccessMessage(`${existingPerson.name}'s phone number has been changed`)
+                    setTimeout(() => {
+                        setSuccessMessage(null)
+                    }, 5000)
+
                     setNewName('')
                     setNewNumber('')
                 })
                 .catch(error =>{
-                    alert(`Information of ${existingPerson.name} has already been removed from server`)
+                    setErrorMessage(
+                        `Information of ${existingPerson.name} has already been removed from server`
+                    )
+                    setPersons(persons.filter(p => p.id !==id))
+                    setTimeout(() =>{
+                        setErrorMessage(null)
+                    }, 5000)
                 })
             return
         }
